@@ -4,12 +4,14 @@ import { Item } from './types/Item';
 import { BASE_API_URL } from './utils/constants';
 import Loader from './components/Loader/Loader';
 import ItemNews from './components/ItemNews/ItemNews';
+import Pagination from './components/Pagination/Pagination';
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<'best' | 'new' | 'top'>('best');
   const [isLoading, setIsLoading] = useState(false)
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     setIsLoading(true)
@@ -25,18 +27,23 @@ function App() {
             (res) => res.json()
           )
         );
-      const items = await Promise.all(itemPromises);
+      const items = await Promise.all(itemPromises)
       setIsLoading(false)
-      setItems(items);
+      setItems(items)
+      setTotalPages(Math.ceil(itemIds.length / 15))
     };
 
     fetchItems(currentPage, sortBy);
-  }, [currentPage, sortBy]);
+  }, [currentPage, sortBy])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
 
   const handleSortChange = (sort: 'best' | 'new' | 'top') => {
-    setSortBy(sort);
-    setCurrentPage(1);
-  };
+    setSortBy(sort)
+    setCurrentPage(1)
+  }
 
   return (
     <>
@@ -66,6 +73,11 @@ function App() {
           )
         }
       </main>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </>
   )
 }

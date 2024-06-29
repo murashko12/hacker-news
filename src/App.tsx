@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+import style from './App.module.css'
 import { Item } from './types/Item';
 import { BASE_API_URL } from './utils/constants';
+import Loader from './components/Loader/Loader';
+import ItemNews from './components/ItemNews/ItemNews';
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
@@ -38,30 +40,32 @@ function App() {
 
   return (
     <>
-      <h1>Hacker News</h1>
-      <nav>
+      <h1 className={style.headerContainer}>Hacker News</h1>
+      <nav className={style.navContainer}>
         <button onClick={() => handleSortChange('best')}>Best</button>
         <button onClick={() => handleSortChange('new')}>New</button>
         <button onClick={() => handleSortChange('top')}>Top</button>
       </nav>
-      {
-        isLoading ? ( 
-          "Loader..."
-        ) : (
-          <div>
-            {items.map((item) => (
-              <div key={item.id}>
-                <a href={item.url}>{item.title}</a>
-                <p>
-                  Author: {item.by} | Score: {item.score} | Time: {new Date(
-                    item.time * 1000
-                  ).toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        )
-      }
+      <main className={style.mainContainer}>
+        {
+          isLoading ? ( 
+            <Loader/>
+          ) : (
+            <div>
+              {items.map((item) => (
+                <ItemNews 
+                  key={item.id} id={0} 
+                  by={item.by} 
+                  score={item.score} 
+                  time={item.time} 
+                  title={item.title} 
+                  type={item.type} 
+                  url={item.url}/>
+              ))}
+            </div>
+          )
+        }
+      </main>
     </>
   )
 }
